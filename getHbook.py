@@ -2,9 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from requests.exceptions import RequestException
+from Config import *
 
-baseurl = 'http://www.xxshubao.com/'
 subbookurl = 'book/52894.html'
+
+
 def get_charpter_url(bookurl):
   try:
     responde = requests.get(bookurl)
@@ -54,6 +56,8 @@ def get_good_content(content2):
     content = re.sub('Cha', '插', content)
     content = re.sub('Chu', '处', content)
     content = re.sub('She', '射', content)
+    content = re.sub('<br />', '', content)
+    content = re.sub('<script|type="text/javascript">|read_text_c|</script>|\(|\)|\;|\||丨', '', content)
     goodcontent = content
     return goodcontent
 
@@ -77,11 +81,11 @@ def write_to_file(content):
         f.write(content)
         f.close()
 
-def main():
-    bookurl = baseurl+subbookurl
+def main(subbookurl):
+    bookurl = BASEURL+subbookurl
     html = get_charpter_url(bookurl)
     for href,title in parse_charpter_url(html):
-        pageurl = baseurl+href
+        pageurl = BASEURL+href
         pagehtml = get_page_content(pageurl)
         for title2,content in parse_page_content(pagehtml):
             content = title2+'\n'+content
@@ -92,5 +96,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(subbookurl)
 
